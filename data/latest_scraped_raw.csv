@@ -1,0 +1,8 @@
+Year,Period,Age,IsAdult,Hourly_Statutory
+2026,January,21+,True,14.71
+2026,January,20,False,11.77
+2026,January,19,False,8.83
+2026,January,18,False,7.36
+2026,January,17,False,5.81
+2026,January,16,False,5.07
+2026,January,15,False,4.41
