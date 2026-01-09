@@ -41,7 +41,14 @@ TRANSLATIONS = {
         "cat_age": "Age: ",
         "defl_labels": ["None (Nominal)", "Monthly CPI", "Monthly CAO", "Yearly CPI", "Yearly CAO"],
         "wage_type": "Wage Type",
-        "wage_type_opts": ["Nominal", "Real (CPI)"]
+        "wage_type_opts": ["Nominal", "Real (CPI)"],
+        "adv_deflator_label": "Inflation adjustment method:",
+        "deflator_opts": {
+            "Y_CPI": "Yearly CPI (default)",
+            "M_CPI": "Monthly CPI",
+            "Y_CAO": "Yearly Contract Wage",
+            "M_CAO": "Monthly Contract Wage"
+        }
     },
     "nl": {
         "title": "🇳🇱 Verloop Wettelijk Minimumloon (2002–2026+)",
@@ -72,7 +79,14 @@ TRANSLATIONS = {
         "cat_age": "Leeftijd: ",
         "defl_labels": ["Geen (Nominaal)", "Maandelijkse CPI", "Maandelijkse CAO", "Jaarlijkse CPI", "Jaarlijkse CAO"],
         "wage_type": "Loontype",
-        "wage_type_opts": ["Nominaal", "Reëel (CPI)"]
+        "wage_type_opts": ["Nominaal", "Reëel (CPI)"],
+        "adv_deflator_label": "Inflatiecorrectie methode:",
+        "deflator_opts": {
+            "Y_CPI": "Jaarlijkse CPI (standaard)",
+            "M_CPI": "Maandelijkse CPI",
+            "Y_CAO": "Jaarlijks CAO-loon",
+            "M_CAO": "Maandelijks CAO-loon"
+        }
     }
 }
 
@@ -162,8 +176,6 @@ wage_type_choice = st.radio(
     index=1,  # Default to "Real (CPI)"
     horizontal=True,
 )
-deflator_key = "Y_CPI" if wage_type_choice == txt["wage_type_opts"][1] else "None"
-
 
 # Advanced controls in a main page expander
 with st.expander("⚙️ Advanced Settings"):
@@ -176,7 +188,20 @@ with st.expander("⚙️ Advanced Settings"):
     )
 
     hour_basis = st.radio(txt["sb_basis"], options=[36, 38, 40], index=0, horizontal=True)
+    
     st.markdown("---") # Visual separator
+
+    # Advanced Deflator setting
+    advanced_deflator_choice = st.selectbox(
+        txt["adv_deflator_label"],
+        options=list(txt["deflator_opts"].keys()),
+        format_func=lambda k: txt["deflator_opts"][k],
+        # Disable the control if Nominal is chosen on the main toggle
+        disabled=(wage_type_choice == txt["wage_type_opts"][0])
+    )
+
+    st.markdown("---") # Visual separator
+
     selected_events = st.multiselect(
         txt["sb_policy_label"],
         options=list(POLICY_EVENTS.keys()),
@@ -185,11 +210,17 @@ with st.expander("⚙️ Advanced Settings"):
     )
 
 # --- 4. DATA PROCESSING ---
-# 4.1 Calculate Nominal Wage
+# 4.1 Determine Deflator Key
+if wage_type_choice == txt["wage_type_opts"][0]: # "Nominal"
+    deflator_key = "None"
+else: # "Real"
+    deflator_key = advanced_deflator_choice
+
+# 4.2 Calculate Nominal Wage
 pre_2024_col = f"Hourly_{hour_basis}h"
 df['NominalWage'] = np.where(df['Year'] < 2024, df[pre_2024_col], df['Hourly_Statutory'])
 
-# 4.2 Calculate Display Wage (Deflation) 
+# 4.3 Calculate Display Wage (Deflation) 
 base_year_txt = ""
 if deflator_key == "None":
     df['DisplayWage'] = df['NominalWage']
