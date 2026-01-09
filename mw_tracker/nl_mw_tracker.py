@@ -228,6 +228,24 @@ final_df['Category'] = np.where(
 if final_df.empty:
     st.warning(txt["warning_select"])
 else:
+    # --- Y-axis Logic ---
+    # Check if the current settings are the default ones
+    is_default_view = (
+        show_adult and
+        not selected_youth and
+        wage_type_choice == txt["wage_type_opts"][1]
+    )
+
+    # Set the y-axis range
+    if is_default_view:
+        y_range = [11, 15]
+    else:
+        # For any other view, make the axis responsive
+        min_wage = final_df['DisplayWage'].min()
+        # Round down to the nearest integer for a sensible lower bound
+        lower_bound = np.floor(min_wage)
+        y_range = [lower_bound, 15]
+
     # Main Plot
     fig = px.line(
         final_df, 
@@ -269,7 +287,7 @@ else:
 
     # Layout Polish
     fig.update_layout(
-        yaxis=dict(range=[12, 15], tickprefix="€ ", tickformat=".2f"),
+        yaxis=dict(range=y_range, tickprefix="€ ", tickformat=".2f"),
         hovermode="x unified",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         margin=dict(t=80, l=50, r=50, b=50) # Adjusted top margin
