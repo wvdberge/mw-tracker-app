@@ -13,9 +13,9 @@ DEFLATOR_KEYS = ["None", "M_CPI", "M_CAO", "Y_CPI", "Y_CAO"]
 
 TRANSLATIONS = {
     "en": {
-        "title": "🇳🇱 Dutch Minimum Wage Evolution (2002–2026+)",
-        "desc": "Tracks statutory minimum wage. **Pre-2024:** Based on workweek. **2024+:** Universal hourly wage.",
-        "sb_config": "Configuration",
+        "title": "🇳🇱 Dutch Minimum Wage Tracker (2002–2026+)",
+        "desc": "Tracks statutory minimum wage. **Pre-2024:** Based on workweek (36 as default, can be changed in advanced settings). **2024+:** Universal hourly wage.",
+        "sb_config": "Settings",
         "sb_lang": "Language / Taal",
         "sb_adult": "Show Adult Wage",
         "sb_youth": "Compare with Youth Ages:",
@@ -51,8 +51,8 @@ TRANSLATIONS = {
         }
     },
     "nl": {
-        "title": "🇳🇱 Verloop Wettelijk Minimumloon (2002–2026+)",
-        "desc": "Toont het wettelijk minimumloon. **Voor 2024:** Op basis van werkweek. **Vanaf 2024:** Uniform uurloon.",
+        "title": "🇳🇱 Wettelijk Minimumloon Tracker (2002–2026+)",
+        "desc": "Toont het wettelijk minimumloon. **Pre 2024:** Op basis van werkweek (36 uur als standaard, kan aangepast worden in instellingen). **Vanaf 2024:** Uniform uurloon.",
         "sb_config": "Instellingen",
         "sb_lang": "Taal / Language",
         "sb_adult": "Toon Volwassen Loon",
@@ -189,7 +189,7 @@ wage_type_choice = st.radio(
 )
 
 # Advanced controls in a main page expander
-with st.expander("⚙️ Advanced Settings"):
+with st.expander(f"⚙️ {txt['sb_config']}"):
     show_adult = st.toggle(txt["sb_adult"], value=True)
 
     all_ages = [a for a in df['Age'].unique() if a not in ['23+', '22+', '21+', 'Adult']]
