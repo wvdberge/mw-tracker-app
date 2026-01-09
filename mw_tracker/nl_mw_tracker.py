@@ -150,7 +150,7 @@ show_adult = st.sidebar.toggle(txt["sb_adult"], value=True)
 all_ages = [a for a in df['Age'].unique() if a not in ['23+', '22+', '21+', 'Adult']]
 sorted_ages = sorted(all_ages, key=lambda x: int(x) if x.isdigit() else 0)
 selected_youth = st.sidebar.multiselect(
-    txt["sb_youth"], options=sorted_ages, default=sorted_ages
+    txt["sb_youth"], options=sorted_ages, default=[]
 )
 
 # Inflation adjustment in the sidebar
