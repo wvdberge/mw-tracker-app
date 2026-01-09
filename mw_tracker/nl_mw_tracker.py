@@ -41,7 +41,7 @@ TRANSLATIONS = {
         "cat_age": "Age: ",
         "defl_labels": ["None (Nominal)", "Monthly CPI", "Monthly CAO", "Yearly CPI", "Yearly CAO"],
         "wage_type": "Wage Type",
-        "wage_type_opts": ["Nominal", "Real (CPI)"],
+        "wage_type_opts": ["Nominal", "Real"],
         "adv_deflator_label": "Inflation adjustment method:",
         "deflator_opts": {
             "Y_CPI": "Yearly CPI (default)",
@@ -79,7 +79,7 @@ TRANSLATIONS = {
         "cat_age": "Leeftijd: ",
         "defl_labels": ["Geen (Nominaal)", "Maandelijkse CPI", "Maandelijkse CAO", "Jaarlijkse CPI", "Jaarlijkse CAO"],
         "wage_type": "Loontype",
-        "wage_type_opts": ["Nominaal", "Reëel (CPI)"],
+        "wage_type_opts": ["Nominaal", "Reëel"],
         "adv_deflator_label": "Inflatiecorrectie methode:",
         "deflator_opts": {
             "Y_CPI": "Jaarlijkse CPI (standaard)",
@@ -147,8 +147,15 @@ def load_data():
 df = load_data()
 
 # --- 3. UI & CONTROLS ---
+# Initialize session state for the deflator choice if it doesn't exist
+if 'deflator_choice' not in st.session_state:
+    st.session_state.deflator_choice = 'Y_CPI' # Default value
+
+# Callback function to update session state from the selectbox
+def update_deflator_choice():
+    st.session_state.deflator_choice = st.session_state.adv_deflator_widget
+
 # Place language selection at the top for immediate access.
-# Using columns to right-align the selector for a cleaner look.
 _, lang_col = st.columns([0.8, 0.2])
 with lang_col:
     lang_choice = st.radio(
@@ -169,11 +176,15 @@ st.title(txt["title"])
 st.markdown(txt["desc"])
 
 # --- Define Controls ---
-# Main wage type toggle
+# The options for the main toggle are now dynamic based on the advanced choice
+wage_type_opts_dynamic = [
+    txt["wage_type_opts"][0], # e.g., "Nominal"
+    f'{txt["wage_type_opts"][1]} ({txt["deflator_opts"][st.session_state.deflator_choice]})'
+]
 wage_type_choice = st.radio(
     txt["wage_type"],
-    options=txt["wage_type_opts"],
-    index=1,  # Default to "Real (CPI)"
+    options=wage_type_opts_dynamic,
+    index=1,
     horizontal=True,
 )
 
@@ -195,9 +206,11 @@ with st.expander("⚙️ Advanced Settings"):
     advanced_deflator_choice = st.selectbox(
         txt["adv_deflator_label"],
         options=list(txt["deflator_opts"].keys()),
+        index=list(txt["deflator_opts"].keys()).index(st.session_state.deflator_choice), # Sync with session state
         format_func=lambda k: txt["deflator_opts"][k],
-        # Disable the control if Nominal is chosen on the main toggle
-        disabled=(wage_type_choice == txt["wage_type_opts"][0])
+        disabled=(wage_type_choice == wage_type_opts_dynamic[0]),
+        key='adv_deflator_widget',      # A key is needed for the callback
+        on_change=update_deflator_choice # This callback updates session state
     )
 
     st.markdown("---") # Visual separator
@@ -211,10 +224,15 @@ with st.expander("⚙️ Advanced Settings"):
 
 # --- 4. DATA PROCESSING ---
 # 4.1 Determine Deflator Key
-if wage_type_choice == txt["wage_type_opts"][0]: # "Nominal"
+# The 'choice' is the full dynamic label, e.g. "Real (Yearly CPI (default))"
+# We check if the choice is the "Nominal" option.
+is_nominal = (wage_type_choice == wage_type_opts_dynamic[0])
+
+if is_nominal:
     deflator_key = "None"
-else: # "Real"
-    deflator_key = advanced_deflator_choice
+else:
+    # The actual key is stored in session state, updated by the callback
+    deflator_key = st.session_state.deflator_choice
 
 # 4.2 Calculate Nominal Wage
 pre_2024_col = f"Hourly_{hour_basis}h"
@@ -249,7 +267,7 @@ else:
         
     y_axis_title = txt["y_axis_real"].format(base_year_txt)
 
-# 4.3 Filter Data for Plotting (Vectorized)
+# 4.4 Filter Data for Plotting (Vectorized)
 mask_adult = (df['IsAdult'] == True) & (show_adult)
 mask_youth = (df['Age'].isin(selected_youth)) & (df['IsAdult'] == False)
 
@@ -271,7 +289,8 @@ else:
     is_default_view = (
         show_adult and
         not selected_youth and
-        wage_type_choice == txt["wage_type_opts"][1]
+        not is_nominal and # Replaces check against static list
+        st.session_state.deflator_choice == 'Y_CPI'
     )
 
     # Set the y-axis range
