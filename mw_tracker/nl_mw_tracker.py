@@ -345,7 +345,7 @@ else:
     # Layout Polish
     fig.update_layout(
         yaxis=dict(range=y_range, tickprefix="€ ", tickformat=".2f"),
-        hovermode="x unified",
+        hovermode=False, # Disabled for mobile friendliness (prevents large overlay boxes)
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         margin=dict(t=80, l=50, r=50, b=50) # Adjusted top margin
     )
