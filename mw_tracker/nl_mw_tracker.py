@@ -129,7 +129,7 @@ def load_data():
 df = load_data()
 
 # --- 3. UI & SIDEBAR ---
-# Sidebar
+# Initialize language settings first as they control all text
 st.sidebar.title("Configuration")
 lang_choice = st.sidebar.radio("Language / Taal", ["🇬🇧 English", "🇳🇱 Nederlands"], horizontal=True)
 lang = "en" if "English" in lang_choice else "nl"
@@ -139,37 +139,36 @@ if df is None:
     st.error(txt["error_file"])
     st.stop()
 
-# Filter Controls
+# --- Main Page Title ---
+st.title(txt["title"])
+st.markdown(txt["desc"])
+
+# --- Define Controls ---
+# Primary filters in the sidebar
 show_adult = st.sidebar.toggle(txt["sb_adult"], value=True)
 
-# Smart age sorting
 all_ages = [a for a in df['Age'].unique() if a not in ['23+', '22+', '21+', 'Adult']]
 sorted_ages = sorted(all_ages, key=lambda x: int(x) if x.isdigit() else 0)
-
 selected_youth = st.sidebar.multiselect(
     txt["sb_youth"], options=sorted_ages, default=sorted_ages
 )
 
-hour_basis = st.sidebar.radio(txt["sb_basis"], options=[36, 38, 40], index=0, horizontal=True)
-
+# Inflation adjustment in the sidebar
 st.sidebar.divider()
-
-# Deflation Controls
-# Map localized labels to internal keys
 defl_map = dict(zip(txt["defl_labels"], DEFLATOR_KEYS))
 selected_defl_label = st.sidebar.selectbox(txt["sb_deflation"], options=txt["defl_labels"])
 deflator_key = defl_map[selected_defl_label]
 
-st.sidebar.divider()
-
-# Policy Controls
-st.sidebar.subheader(txt["sb_policy"])
-selected_events = st.sidebar.multiselect(
-    txt["sb_policy_label"],
-    options=list(POLICY_EVENTS.keys()),
-    default=list(POLICY_EVENTS.keys()),
-    format_func=lambda x: f"{x}: {POLICY_EVENTS[x]['label'][lang]}"
-)
+# Advanced controls in a main page expander
+with st.expander("⚙️ Advanced Settings"):
+    hour_basis = st.radio(txt["sb_basis"], options=[36, 38, 40], index=0, horizontal=True)
+    st.markdown("---") # Visual separator
+    selected_events = st.multiselect(
+        txt["sb_policy_label"],
+        options=list(POLICY_EVENTS.keys()),
+        default=list(POLICY_EVENTS.keys()),
+        format_func=lambda x: f"{x}: {POLICY_EVENTS[x]['label'][lang]}"
+    )
 
 # --- 4. DATA PROCESSING ---
 # 4.1 Calculate Nominal Wage
@@ -219,9 +218,6 @@ final_df['Category'] = np.where(
 )
 
 # --- 5. VISUALIZATION ---
-st.title(txt["title"])
-st.markdown(txt["desc"])
-
 if final_df.empty:
     st.warning(txt["warning_select"])
 else:
