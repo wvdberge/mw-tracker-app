@@ -260,7 +260,7 @@ else:
         y="DisplayWage", 
         color="Category", 
         markers=True,
-        title=txt['title'],
+
         labels={"DisplayWage": y_axis_title, "Date": "Jaar" if lang == "nl" else "Year"}
     )
     
