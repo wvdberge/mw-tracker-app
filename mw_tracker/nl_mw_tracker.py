@@ -132,10 +132,17 @@ def load_data():
 
 df = load_data()
 
-# --- 3. UI & SIDEBAR ---
-# Initialize language settings first as they control all text
-st.sidebar.title("Configuration")
-lang_choice = st.sidebar.radio("Language / Taal", ["🇬🇧 English", "🇳🇱 Nederlands"], horizontal=True)
+# --- 3. UI & CONTROLS ---
+# Place language selection at the top for immediate access.
+# Using columns to right-align the selector for a cleaner look.
+_, lang_col = st.columns([0.8, 0.2])
+with lang_col:
+    lang_choice = st.radio(
+        label="Language / Taal", 
+        options=["🇬🇧 English", "🇳🇱 Nederlands"], 
+        horizontal=True,
+        label_visibility="collapsed" # Options are self-explanatory
+    )
 lang = "en" if "English" in lang_choice else "nl"
 txt = TRANSLATIONS[lang]
 
