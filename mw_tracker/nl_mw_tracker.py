@@ -39,7 +39,9 @@ TRANSLATIONS = {
         "base_index": "Index Base Year",
         "cat_adult": "Adult",
         "cat_age": "Age: ",
-        "defl_labels": ["None (Nominal)", "Monthly CPI", "Monthly CAO", "Yearly CPI", "Yearly CAO"]
+        "defl_labels": ["None (Nominal)", "Monthly CPI", "Monthly CAO", "Yearly CPI", "Yearly CAO"],
+        "wage_type": "Wage Type",
+        "wage_type_opts": ["Nominal", "Real (CPI)"]
     },
     "nl": {
         "title": "🇳🇱 Verloop Wettelijk Minimumloon (2002–2026+)",
@@ -68,7 +70,9 @@ TRANSLATIONS = {
         "base_index": "Index Basisjaar",
         "cat_adult": "Volwassen",
         "cat_age": "Leeftijd: ",
-        "defl_labels": ["Geen (Nominaal)", "Maandelijkse CPI", "Maandelijkse CAO", "Jaarlijkse CPI", "Jaarlijkse CAO"]
+        "defl_labels": ["Geen (Nominaal)", "Maandelijkse CPI", "Maandelijkse CAO", "Jaarlijkse CPI", "Jaarlijkse CAO"],
+        "wage_type": "Loontype",
+        "wage_type_opts": ["Nominaal", "Reëel (CPI)"]
     }
 }
 
@@ -144,23 +148,26 @@ st.title(txt["title"])
 st.markdown(txt["desc"])
 
 # --- Define Controls ---
-# Primary filters in the sidebar
-show_adult = st.sidebar.toggle(txt["sb_adult"], value=True)
-
-all_ages = [a for a in df['Age'].unique() if a not in ['23+', '22+', '21+', 'Adult']]
-sorted_ages = sorted(all_ages, key=lambda x: int(x) if x.isdigit() else 0)
-selected_youth = st.sidebar.multiselect(
-    txt["sb_youth"], options=sorted_ages, default=[]
+# Main wage type toggle
+wage_type_choice = st.radio(
+    txt["wage_type"],
+    options=txt["wage_type_opts"],
+    index=1,  # Default to "Real (CPI)"
+    horizontal=True,
 )
+deflator_key = "Y_CPI" if wage_type_choice == txt["wage_type_opts"][1] else "None"
 
-# Inflation adjustment in the sidebar
-st.sidebar.divider()
-defl_map = dict(zip(txt["defl_labels"], DEFLATOR_KEYS))
-selected_defl_label = st.sidebar.selectbox(txt["sb_deflation"], options=txt["defl_labels"])
-deflator_key = defl_map[selected_defl_label]
 
 # Advanced controls in a main page expander
 with st.expander("⚙️ Advanced Settings"):
+    show_adult = st.toggle(txt["sb_adult"], value=True)
+
+    all_ages = [a for a in df['Age'].unique() if a not in ['23+', '22+', '21+', 'Adult']]
+    sorted_ages = sorted(all_ages, key=lambda x: int(x) if x.isdigit() else 0)
+    selected_youth = st.multiselect(
+        txt["sb_youth"], options=sorted_ages, default=[]
+    )
+
     hour_basis = st.radio(txt["sb_basis"], options=[36, 38, 40], index=0, horizontal=True)
     st.markdown("---") # Visual separator
     selected_events = st.multiselect(
@@ -262,7 +269,7 @@ else:
 
     # Layout Polish
     fig.update_layout(
-        yaxis=dict(range=[6, 14], tickprefix="€ ", tickformat=".2f"),
+        yaxis=dict(range=[12, 15], tickprefix="€ ", tickformat=".2f"),
         hovermode="x unified",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         margin=dict(t=80, l=50, r=50, b=50) # Adjusted top margin
