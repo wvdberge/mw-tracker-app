@@ -166,7 +166,7 @@ with st.expander("⚙️ Advanced Settings"):
     selected_events = st.multiselect(
         txt["sb_policy_label"],
         options=list(POLICY_EVENTS.keys()),
-        default=list(POLICY_EVENTS.keys()),
+        default=[],
         format_func=lambda x: f"{x}: {POLICY_EVENTS[x]['label'][lang]}"
     )
 
@@ -262,7 +262,7 @@ else:
 
     # Layout Polish
     fig.update_layout(
-        yaxis=dict(rangemode="tozero", tickprefix="€ ", tickformat=".2f"),
+        yaxis=dict(range=[6, 14], tickprefix="€ ", tickformat=".2f"),
         hovermode="x unified",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         margin=dict(t=80, l=50, r=50, b=50) # Adjusted top margin
