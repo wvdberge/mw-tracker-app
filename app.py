@@ -350,7 +350,7 @@ else:
         margin=dict(t=80, l=50, r=50, b=50) # Adjusted top margin
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # --- 6. CALCULATOR ---
     st.divider()
@@ -385,6 +385,6 @@ else:
         st.dataframe(
             final_df[['Date', 'Category', 'NominalWage', 'DisplayWage']]
             .sort_values(['Date', 'Category'], ascending=[False, True]),
-            use_container_width=True,
+            width='stretch',
             hide_index=True
         )
