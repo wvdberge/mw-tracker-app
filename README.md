@@ -1,8 +1,8 @@
 ---
 title: Dutch Minimum Wage Tracker
-emoji: 🇳🇱
+emoji: 📈
 colorFrom: blue
-colorTo: orange
+colorTo: yellow
 sdk: streamlit
 sdk_version: 1.52.2
 app_file: app.py
