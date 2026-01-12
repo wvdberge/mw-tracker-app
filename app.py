@@ -14,7 +14,7 @@ DEFLATOR_KEYS = ["None", "M_CPI", "M_CAO", "Y_CPI", "Y_CAO"]
 TRANSLATIONS = {
     "en": {
         "title": "🇳🇱 Dutch Minimum Wage Tracker (2002–2026+)",
-        "desc": "Tracks statutory minimum wage. **Pre-2024:** Based on workweek (36 as default, can be changed in advanced settings). **2024+:** Universal hourly wage.",
+        "desc": "Tracks statutory minimum wage. **Pre-2024:** Based on workweek (36 as default, can be changed in Settings). **2024+:** Universal hourly wage.",
         "sb_config": "Settings",
         "sb_lang": "Language / Taal",
         "sb_adult": "Show Adult Wage",
@@ -52,7 +52,7 @@ TRANSLATIONS = {
     },
     "nl": {
         "title": "🇳🇱 Wettelijk Minimumloon Tracker (2002–2026+)",
-        "desc": "Toont het wettelijk minimumloon. **Pre 2024:** Op basis van werkweek (36 uur als standaard, kan aangepast worden in instellingen). **Vanaf 2024:** Uniform uurloon.",
+        "desc": "**Pre 2024:** Op basis van werkweek (36 uur als standaard, kan aangepast worden in Instellingen). **Vanaf 2024:** Uniform uurloon.",
         "sb_config": "Instellingen",
         "sb_lang": "Taal / Language",
         "sb_adult": "Toon Volwassen Loon",
