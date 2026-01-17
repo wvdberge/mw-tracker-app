@@ -1,2 +1,41 @@
+# OS
 .DS_Store
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+
+# Editors
+*.swp
+*.swo
+
+# Python / R
+__pycache__/
+*.pyc
+.Rhistory
+.Rproj.user/
+
+# Data (keep data local)
+data/
+# or uncomment to be more granular:
+# data/raw/
+# data/processed/
+
+# PDF and other binary files
+*.pdf
+*.docx
+*.xlsx
+*.xls
+*.dta
+*.rdata
+
+# Results: ignore temp / large junk
+results/*.tmp
+results/*.log
+
 linkedin_post_strategy.md
